@@ -25,7 +25,7 @@ const Statistics = (props) => {
   if (total === 0) {
     return(
       <div>
-        <p>No Feedback given</p>
+        <p>No feedback given</p>
       </div>  
     )
   }
@@ -50,9 +50,16 @@ const Statistics = (props) => {
 const StatisticLine = (props) => {
   if (props.text == "positive") {
     return (
-      <tr><td>{props.text}</td><td>{props.value}%</td></tr>
+      <tr><td>{props.text}</td><td>{props.value.toFixed(1)}%</td></tr>
     )
   }
+
+  if (props.text == "average") {
+    return (
+      <tr><td>{props.text} </td><td>{props.value.toFixed(1)}</td></tr>
+    )
+  }
+  
   return (
     <tr><td>{props.text} </td><td>{props.value}</td></tr>
   )
