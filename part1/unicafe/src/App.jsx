@@ -1,15 +1,5 @@
 import { useState } from 'react'
 
-
- const Header = (props) => {
-  return (
-    <div>
-      <h1>{props.text}</h1>
-    </div>
-  )
-}
-
-
 const Button = (props) => {
   return(
     <button onClick={props.onClick}>
@@ -18,77 +8,91 @@ const Button = (props) => {
   )
 }
 
-
-
-
-
-const App = () => {
-  const anecdotes = [
-    'If it hurts, do it more often.',
-    'Adding manpower to a late software project makes it later!',
-    'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
-    'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
-    'Premature optimization is the root of all evil.',
-    'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
-    'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
-    'The only way to go fast, is to go well.'
-  ]
-   
-  const [selected, setSelected] = useState(0)
-  const [topvote, setTopVote] = useState(anecdotes.length+1)
-
-  const nextClick = () => {
-    setSelected(Math.floor(Math.random() * anecdotes.length))
-  }
-
-  const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
-
- 
-   
-  const voteforQuote = () => {  
-    const copy = [ ...votes ]
-    
-    copy[selected] += 1
-    setVotes(copy)
-    let checkhighest = 0
-    let highestref = 0
-    
-    for (let i = 0; i < copy.length; i++) {
-      if (copy[i] > checkhighest) {
-        checkhighest = copy[i]
-        highestref = i
-      }
-    }
-    setTopVote(highestref)
-  }
-
-
-  const Returnanecdote = (props) => {
-    if (props.num === anecdotes.length+1) {
-      return(
-        <div>
-          No votes yet
-        </div>
-      )
-    }
-  return(
-  <div>
-    {anecdotes[props.num]}
-  </div>
+const Header = (props) => {
+  return (
+    <div>
+      <h1>{props.text}</h1>
+    </div>
   )
-  }
+}
 
+
+const Statistics = (props) => {
+  const total = props.good + props.neutral + props.bad
+  const average = props.good - props.bad / total
+  const positive = props.good / total * 100
+
+  if (total === 0) {
+    return(
+      <div>
+        <p>No feedback given</p>
+      </div>  
+    )
+  }
 
   return (
     <div>
-      <Header text="Anecodote of the day" />
-      <Returnanecdote num={selected}/>
-      <Button onClick={voteforQuote} quote={selected} text="vote" />
-      <Button onClick={nextClick} text="next anecdote" />
+      <table>
+        <tbody>
+          <StatisticLine text="good" value={props.good} />
+          <StatisticLine text="neutral" value={props.neutral} />
+          <StatisticLine text="bad" value={props.bad} />
+          <StatisticLine text="total" value={total} />
+          <StatisticLine text="average" value={average} />
+          <StatisticLine text="positive" value={positive} />
+        </tbody>
+      </table>
+    </div>
+  )
+}
 
-      <Header text="Anecdote with the most votes" />
-      <Returnanecdote num={topvote}/>
 
+const StatisticLine = (props) => {
+  if (props.text == "positive") {
+    return (
+      <tr><td>{props.text}</td><td>{props.value.toFixed(1)}%</td></tr>
+    )
+  }
+
+  if (props.text == "average") {
+    return (
+      <tr><td>{props.text} </td><td>{props.value.toFixed(1)}</td></tr>
+    )
+  }
+  
+  return (
+    <tr><td>{props.text} </td><td>{props.value}</td></tr>
+  )
+}
+
+const App = () => {
+  // save clicks of each button to its own state
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
+
+  const increaseGood = () => {
+    setGood(good + 1)
+  }
+
+  const increaseNeutral = () => {
+    console.log('neutral value is now', neutral+1)
+    setNeutral(neutral + 1)
+  }
+
+  const increaseBad = () => {
+    console.log('bad value is now', bad+1)
+    setBad(bad + 1)
+  }
+
+  return (
+    <div>
+      <Header text="give feedback" />
+      <Button onClick={increaseGood} text="good" />
+      <Button onClick={increaseNeutral} text="neutral" />
+      <Button onClick={increaseBad} text="bad" />
+      <Header text="statistics" />
+      <Statistics good={good} bad={bad} neutral={neutral}/>
     </div>
   )
 }
